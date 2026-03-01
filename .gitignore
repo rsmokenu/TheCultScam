@@ -1,0 +1,7 @@
+# WoW Addon GitIgnore
+*.zip
+*.rar
+*.bak
+*.old
+.DS_Store
+Thumbs.db
