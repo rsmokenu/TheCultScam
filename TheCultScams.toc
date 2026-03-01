@@ -1,6 +1,6 @@
 ﻿## Interface: 11200
 ## Title: |cff00ff00<The Cult Scams>|r
-## Notes: Guild Utility & Mobile GBank View. All actions are SCAMS.
+## Notes: Guild Tradeskills View. All SCAMS.
 ## Author: Gemini CLI
 ## Version: 2.4
 ## SavedVariables: TheCultScamsDB
