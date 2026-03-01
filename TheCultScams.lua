@@ -1,4 +1,4 @@
--- <The Cult Scams> Core Logic - v4.7 [KHAKI] TS: 11:31:02
+-- <The Cult Scams> Core Logic - v4.9 [SLATE] TS: 11:34:55
 local ADDON_MSG_PREFIX = "CultScams"
 TheCultScamsCore = CreateFrame("Frame", "TheCultScamsCore")
 local SCAM = TheCultScamsCore
@@ -7,7 +7,8 @@ SCAM:SetScript("OnEvent", function()
     if event == "ADDON_LOADED" and arg1 == "TheCultScams" then  
         TheCultScamsDB = TheCultScamsDB or {}; TheCultScamsDB.Players = TheCultScamsDB.Players or {}; TheCultScamsDB.Messages = TheCultScamsDB.Messages or {}
         TheCultScamsDB.CustomGroups = TheCultScamsDB.CustomGroups or { ["General"] = {} }
-        DEFAULT_CHAT_FRAME:AddMessage("|cffbdb76b<The Cult Scams>|r v4.7 [KHAKI] Loaded.")
+        if TheCultScamsDB.DebugMode == nil then TheCultScamsDB.DebugMode = false end
+        DEFAULT_CHAT_FRAME:AddMessage("|cff2f4f4f<The Cult Scams>|r v4.9 [SLATE] Loaded.")
     elseif event == "CHAT_MSG_ADDON" and arg1 == ADDON_MSG_PREFIX then SCAM:ProcessIncomingScam(arg4, arg2)
     elseif event == "CHAT_MSG_WHISPER" then
         local g, t = string.match(arg1, "^SCAM_GRP:(.-):(.*)")
@@ -52,4 +53,8 @@ function SCAM:SendGroupMessage(group, text)
     TheCultScamsDB.Messages[group] = TheCultScamsDB.Messages[group] or {}; table.insert(TheCultScamsDB.Messages[group], { sender = UnitName("player"), text = text, time = time() }); if TheCultScams_UpdateGUI then TheCultScams_UpdateGUI() end
 end
 SLASH_SCAM1, SLASH_SCAM2 = "/scam", "/scamsync"
-SlashCmdList["SCAM"] = function(msg) if msg == "sync" then SCAM:ScanTradeSkills(); SCAM:ScanCrafts(); return end; if TheCultScams_MobileFrame:IsVisible() then TheCultScams_MobileFrame:Hide() else TheCultScams_MobileFrame:Show() end end
+SlashCmdList["SCAM"] = function(msg) 
+    if msg == "sync" then SCAM:ScanTradeSkills(); SCAM:ScanCrafts(); return 
+    elseif msg == "debug" then TheCultScamsDB.DebugMode = not TheCultScamsDB.DebugMode; DEFAULT_CHAT_FRAME:AddMessage("|cffaaaaaa[SCAM]|r Debug Mode: " .. (TheCultScamsDB.DebugMode and "ON" or "OFF")); return end
+    if TheCultScams_MobileFrame:IsVisible() then TheCultScams_MobileFrame:Hide() else TheCultScams_MobileFrame:Show() end 
+end
