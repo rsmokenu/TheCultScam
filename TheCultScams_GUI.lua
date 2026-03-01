@@ -1,23 +1,25 @@
--- <The Cult Scams> Matte UI - v4.5 [LAVENDER] TS: 11:10:40
+-- <The Cult Scams> Matte UI - v4.6 [CHARCOAL] TS: 11:28:29
 local frame = CreateFrame("Frame", "TheCultScams_MobileFrame", UIParent)
 frame:SetWidth(320); frame:SetHeight(450); frame:SetPoint("CENTER", 0, 0); frame:SetMovable(true); frame:SetResizable(true); frame:EnableMouse(true); frame:RegisterForDrag("LeftButton")
 frame:SetBackdrop({bgFile="Interface\\Tooltips\\UI-Tooltip-Background", edgeFile="Interface\\DialogFrame\\UI-DialogBox-Border", tile=true, tileSize=32, edgeSize=16, insets={left=5,right=5,top=5,bottom=5}})
-frame:SetBackdropColor(0.2, 0.15, 0.3, 0.95); frame:Hide()
-
+frame:SetBackdropColor(0.1, 0.1, 0.1, 0.98); frame:Hide()
 local currentTab = "PLAYERS"; local currentGroup = "General"; local ExpandedPlayers = {}; local ExpandedProfs = {}
 
+-- 1.12.1 INVENTORY HELPER (FIXED: Plain search)
 local function GetItemCountByName(name)
-    local count = 0; for bag=0, 4 do for slot=1, GetContainerNumSlots(bag) do local link = GetContainerItemLink(bag, slot); if link and string.find(link, "%["..name.."%]") then local _, c = GetContainerItemInfo(bag, slot); count = count + c end end end
+    if not name then return 0 end
+    local count = 0; for bag=0, 4 do for slot=1, GetContainerNumSlots(bag) do local link = GetContainerItemLink(bag, slot); if link and string.find(link, "["..name.."]", 1, true) then local _, c = GetContainerItemInfo(bag, slot); count = count + c end end end
     return count
 end
 
--- CLIPBOARD & CARD
+-- RECIPE CARD
 local cb = CreateFrame("EditBox", "TheCultScams_Clipboard", frame, "InputBoxTemplate"); cb:SetWidth(200); cb:SetHeight(20); cb:SetPoint("CENTER", 0, 0); cb:SetFrameLevel(100); cb:Hide()
 cb:SetScript("OnEscapePressed", function() this:Hide() end); cb:SetScript("OnEnterPressed", function() this:Hide() end)
 local card = CreateFrame("Frame", "TheCultScams_RecipeCard", frame); card:SetWidth(280); card:SetHeight(180); card:SetPoint("CENTER", 0, 20); card:SetBackdrop({bgFile="Interface\\Tooltips\\UI-Tooltip-Background", edgeFile="Interface\\Tooltips\\UI-Tooltip-Border", edgeSize=12}); card:SetBackdropColor(0,0,0,1); card:SetFrameLevel(20); card:Hide(); card.rows = {}
 for idx=1, 10 do local r = CreateFrame("Button", nil, card); r:SetWidth(260); r:SetHeight(16); r:SetPoint("TOPLEFT", 10, -30-(idx-1)*16); r.text = r:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall"); r.text:SetPoint("LEFT", 0, 0); r:RegisterForClicks("LeftButtonUp"); card.rows[idx] = r end
 local cardTitle = card:CreateFontString(nil, "OVERLAY", "GameFontNormal"); cardTitle:SetPoint("TOP", 0, -10)
 local function ShowRecipe(name, mats)
+    if not name or not mats then return end
     cardTitle:SetText("|cffffff00"..name.."|r"); for _, r in pairs(card.rows) do r:Hide() end; local rowIdx = 1
     for m in string.gfind(mats, "([^,]+)") do if card.rows[rowIdx] then local r = card.rows[rowIdx]; r:Show(); m = string.gsub(m, "^%s*(.-)%s*$", "%1"); local mN, mC = string.match(m, "(.+) x(%d+)") or string.match(m, "(.+) %((%d+)%)"); if not mN then mN = m; mC = 1 end; local countInInv = GetItemCountByName(mN); local color = (countInInv >= tonumber(mC)) and "|cff00ff00" or "|cffaaaaaa"; r.text:SetText(color..m.." (Bag: "..countInInv..")|r"); r:SetScript("OnClick", function() cb:SetText(mN); cb:Show(); cb:SetFocus(); cb:HighlightText() end); rowIdx = rowIdx + 1 end end
     card:Show()
@@ -26,8 +28,7 @@ local cardClose = CreateFrame("Button", nil, card, "UIPanelCloseButton"); cardCl
 
 -- MAIN CLOSE BUTTON
 local mainClose = CreateFrame("Button", "TheCultScams_MainCloseButton", frame, "UIPanelCloseButton")
-mainClose:SetPoint("TOPRIGHT", -5, -5); mainClose:SetFrameLevel(10)
-mainClose:SetScript("OnClick", function() frame:Hide() end)
+mainClose:SetPoint("TOPRIGHT", -5, -5); mainClose:SetFrameLevel(10); mainClose:SetScript("OnClick", function() frame:Hide() end)
 
 local function Row_OnClick()
     if this.action == "TOGGLE_PLAYER" then ExpandedPlayers[this.arg1] = not ExpandedPlayers[this.arg1]; TheCultScams_UpdateGUI()
@@ -39,7 +40,7 @@ local function Row_OnClick()
     elseif this.action == "WHISPER" then ChatFrame_OpenChat("/w " .. this.arg1 .. " ") end
 end
 local function CreateTab(id, text, x)
-    local b = CreateFrame("Button", nil, frame); b:SetWidth(80); b:SetHeight(24); b:SetPoint("TOPLEFT", x, -35); b:SetBackdrop({bgFile="Interface\\Buttons\\WHITE8X8", edgeFile="Interface\\Tooltips\\UI-Tooltip-Border", edgeSize=12}); b:SetBackdropColor(0.15, 0.1, 0.2, 1); b.tabID = id; b.text = b:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall"); b.text:SetPoint("CENTER", 0, 0); b.text:SetText(text); b:SetScript("OnClick", function() currentTab = this.tabID; TheCultScams_UpdateGUI() end)
+    local b = CreateFrame("Button", nil, frame); b:SetWidth(80); b:SetHeight(24); b:SetPoint("TOPLEFT", x, -35); b:SetBackdrop({bgFile="Interface\\Buttons\\WHITE8X8", edgeFile="Interface\\Tooltips\\UI-Tooltip-Border", edgeSize=12}); b:SetBackdropColor(0.2, 0.2, 0.2, 1); b.tabID = id; b.text = b:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall"); b.text:SetPoint("CENTER", 0, 0); b.text:SetText(text); b:SetScript("OnClick", function() currentTab = this.tabID; TheCultScams_UpdateGUI() end)
 end
 CreateTab("PLAYERS", "ROSTER", 15); CreateTab("SEARCH", "SEARCH", 100); CreateTab("CHAT", "CHAT", 185)
 local scrollFrame = CreateFrame("ScrollFrame", "TheCultScams_ScrollFrame", frame, "UIPanelScrollFrameTemplate"); scrollFrame:SetPoint("TOPLEFT", 15, -100); scrollFrame:SetPoint("BOTTOMRIGHT", -35, 60); local content = CreateFrame("Frame", nil, scrollFrame); content:SetWidth(250); content:SetHeight(100); scrollFrame:SetScrollChild(content); local rows = {}
@@ -53,6 +54,6 @@ function TheCultScams_UpdateGUI()
     elseif currentTab == "CHAT" then groupInput:Show(); groupBtn:Show(); scrollFrame:SetPoint("TOPLEFT", 15, -100); AddRow("|cff00ffff[GROUP MANAGER]|r", 0, 1, 1); for gName in pairs(TheCultScamsDB.CustomGroups) do local sel = (gName == currentGroup) and "> " or "  "; AddRow(sel..gName, 1, 1, 1, "SELECT_GROUP", gName); if gName == currentGroup and gName ~= "General" then AddRow("  |cff00ff00+ Add Member|r", 0, 1, 0, "ADD_MEMBER"); for mem in pairs(TheCultScamsDB.CustomGroups[gName]) do AddRow("    |cffff8000- "..mem.."|r", 1, 0.5, 0, "REMOVE_MEMBER", mem) end end end; AddRow("--- Messages ("..currentGroup..") ---", 0.5, 0.5, 0.5); local msgs = TheCultScamsDB.Messages[currentGroup] or {}; for _, m in ipairs(msgs) do AddRow("["..m.sender.."]: "..m.text, 0.8, 0.6, 0.8, "WHISPER", m.sender) end end
     content:SetHeight(rowIdx * 16)
 end
-StaticPopupDialogs["SCAM_ADD_MEMBER"] = { text = "Add player to " .. currentGroup, button1 = "Add", button2 = "Cancel", hasEditBox = 1, OnAccept = function() local n = getglobal(this:GetParent():GetName().."EditBox"):GetText(); if n ~= "" then TheCultScamsDB.CustomGroups[currentGroup][n] = true; TheCultScams_UpdateGUI() end end, timeout = 0, whileDead = 1, hideOnEscape = 1 }; groupBtn:SetScript("OnClick", function() local n = groupInput:GetText(); if n ~= "" then TheCultScamsDB.CustomGroups[n] = {}; TheCultScams_UpdateGUI() end end); frame:SetScript("OnShow", function() TheCultScams_UpdateGUI() end); frame:SetScript("OnDragStart", function() this:StartMoving() end); frame:SetScript("OnDragStop", function() this:StopMovingOrSizing() end)
+StaticPopupDialogs["SCAM_ADD_MEMBER"] = { text = "Add player to " .. currentGroup, button1 = "Add", button2 = "Cancel", hasEditBox = 1, OnAccept = function() local n = getglobal(this:GetParent():GetName().."EditBox"):GetText(); if n ~= "" then TheCultScamsDB.CustomGroups[currentGroup][n] = true; TheCultScams_UpdateGUI() end end, timeout = 0, whileDead = 1, hideOnEscape = 1 }; groupBtn:SetScript("OnClick", function() local n = groupInput:GetText(); if n ~= "" then TheCultScamsDB.CustomGroups[n] = {}; TheCultScams_UpdateGUI() end end); frame:SetScript("OnShow", function() TheCultScams_UpdateGUI() end); frame:SetScript("OnDragStart", function() this:StartMoving() end); frame:SetScript("OnDragStop", function() this:StopMovingOrSizing() end); local resizer = CreateFrame("Button", nil, frame); resizer:SetWidth(10); resizer:SetHeight(10); resizer:SetPoint("BOTTOMRIGHT", 0, 0); resizer:SetNormalTexture("Interface\\ChatFrame\\UI-ChatIM-SizeGrabber-Up"); resizer:SetScript("OnMouseDown", function() this:GetParent():StartSizing("BOTTOMRIGHT") end); resizer:SetScript("OnMouseUp", function() this:GetParent():StopMovingOrSizing(); TheCultScams_UpdateGUI() end)
 local searchBox = CreateFrame("EditBox", "TheCultScams_SearchBox", frame, "InputBoxTemplate"); searchBox:SetWidth(200); searchBox:SetHeight(20); searchBox:SetPoint("TOP", 0, -75); searchBox:SetAutoFocus(false); searchBox:SetScript("OnTextChanged", function() TheCultScams_UpdateGUI() end); searchBox:Hide()
-local chatBox = CreateFrame("EditBox", nil, frame, "InputBoxTemplate"); chatBox:SetWidth(200); chatBox:SetHeight(20); chatBox:SetPoint("BOTTOMLEFT", 15, 35); chatBox:SetAutoFocus(false); chatBox:SetScript("OnEnterPressed", function() TheCultScamsCore:SendGroupMessage(currentGroup, this:GetText()); this:SetText(""); this:ClearFocus() end); local footer = frame:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall"); footer:SetPoint("BOTTOM", 0, 10); footer:SetText("The Cult Scams v4.5 [LAVENDER] TS: 11:10:40"); footer:SetTextColor(0.5, 0.5, 0.5); local resizer = CreateFrame("Button", nil, frame); resizer:SetWidth(10); resizer:SetHeight(10); resizer:SetPoint("BOTTOMRIGHT", 0, 0); resizer:SetNormalTexture("Interface\\ChatFrame\\UI-ChatIM-SizeGrabber-Up"); resizer:SetScript("OnMouseDown", function() this:GetParent():StartSizing("BOTTOMRIGHT") end); resizer:SetScript("OnMouseUp", function() this:GetParent():StopMovingOrSizing(); TheCultScams_UpdateGUI() end)
+local chatBox = CreateFrame("EditBox", nil, frame, "InputBoxTemplate"); chatBox:SetWidth(200); chatBox:SetHeight(20); chatBox:SetPoint("BOTTOMLEFT", 15, 35); chatBox:SetAutoFocus(false); chatBox:SetScript("OnEnterPressed", function() TheCultScamsCore:SendGroupMessage(currentGroup, this:GetText()); this:SetText(""); this:ClearFocus() end); local footer = frame:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall"); footer:SetPoint("BOTTOM", 0, 10); footer:SetText("The Cult Scams v4.6 [CHARCOAL] TS: 11:28:29"); footer:SetTextColor(0.5, 0.5, 0.5)
