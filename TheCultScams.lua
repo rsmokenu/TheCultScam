@@ -1,4 +1,4 @@
--- <The Cult Scams> Core Logic - v5.0 [MAROON] TS: 11:37:07
+-- <The Cult Scams> Core Logic - v5.1 [SAGE] TS: 11:38:31
 local ADDON_MSG_PREFIX = "CultScams"
 TheCultScamsCore = CreateFrame("Frame", "TheCultScamsCore")
 local SCAM = TheCultScamsCore
@@ -8,7 +8,7 @@ SCAM:SetScript("OnEvent", function()
         TheCultScamsDB = TheCultScamsDB or {}; TheCultScamsDB.Players = TheCultScamsDB.Players or {}; TheCultScamsDB.Messages = TheCultScamsDB.Messages or {}
         if type(TheCultScamsDB.CustomGroups) ~= "table" then TheCultScamsDB.CustomGroups = { ["General"] = {} } end
         if TheCultScamsDB.DebugMode == nil then TheCultScamsDB.DebugMode = false end
-        DEFAULT_CHAT_FRAME:AddMessage("|cff800000<The Cult Scams>|r v5.0 [MAROON] Loaded.")
+        DEFAULT_CHAT_FRAME:AddMessage("|cff9dc183<The Cult Scams>|r v5.1 [SAGE] Loaded.")
     elseif event == "CHAT_MSG_ADDON" and arg1 == ADDON_MSG_PREFIX then SCAM:ProcessIncomingScam(arg4, arg2)
     elseif event == "CHAT_MSG_WHISPER" then
         local _, _, g, t = string.find(arg1, "^SCAM_GRP:(.-):(.*)")
