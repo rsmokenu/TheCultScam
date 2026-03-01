@@ -1,4 +1,4 @@
--- <The Cult Scams> Core Logic - v4.4 [MINT] TS: 10:25:42
+-- <The Cult Scams> Core Logic - v4.5 [LAVENDER] TS: 11:10:40
 local ADDON_MSG_PREFIX = "CultScams"
 TheCultScamsCore = CreateFrame("Frame", "TheCultScamsCore")
 local SCAM = TheCultScamsCore
@@ -7,7 +7,7 @@ SCAM:SetScript("OnEvent", function()
     if event == "ADDON_LOADED" and arg1 == "TheCultScams" then  
         TheCultScamsDB = TheCultScamsDB or {}; TheCultScamsDB.Players = TheCultScamsDB.Players or {}; TheCultScamsDB.Messages = TheCultScamsDB.Messages or {}
         TheCultScamsDB.CustomGroups = TheCultScamsDB.CustomGroups or { ["General"] = {} }
-        DEFAULT_CHAT_FRAME:AddMessage("|cff98ff98<The Cult Scams>|r v4.4 [MINT] Loaded.")
+        DEFAULT_CHAT_FRAME:AddMessage("|cffe6e6fa<The Cult Scams>|r v4.5 [LAVENDER] Loaded.")
     elseif event == "CHAT_MSG_ADDON" and arg1 == ADDON_MSG_PREFIX then SCAM:ProcessIncomingScam(arg4, arg2)
     elseif event == "CHAT_MSG_WHISPER" then
         local g, t = string.match(arg1, "^SCAM_GRP:(.-):(.*)")
@@ -34,7 +34,7 @@ function SCAM:ScanCrafts()
     for i=1, GetNumCrafts() do
         local n, _, t = GetCraftInfo(i); if n and t ~= "header" then
             local l = GetCraftItemLink(i) or n; local rStr = ""
-            for rIdx=1, GetCraftNumReagents(i) do local rn, _, rc = GetCraftReagentInfo(i, rIdx); rStr = rStr .. rn .. " x" .. rc .. ", " end
+            for rIdx=1, GetCraftNumReagents(i) do local rn, _, rc = GetTradeSkillReagentInfo(i, rIdx); rStr = rStr .. rn .. " x" .. rc .. ", " end
             rStr = (rStr == "") and "None" or string.sub(rStr, 1, -3)
             TheCultScamsDB.Players[pName][prof][n] = { link = l, mats = rStr }; local msg = "CRAFT\t" .. prof .. "\t" .. n .. "\t" .. l .. "\t" .. rStr; SendAddonMessage(ADDON_MSG_PREFIX, (string.len(msg) > 250 and string.sub(msg, 1, 247).."..." or msg), "GUILD")
         end
