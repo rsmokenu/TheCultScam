@@ -1,4 +1,5 @@
-# <The Cult Scams> v2.0 (Crafting Edition)
+# <The Cult Scam> v2.0 (Crafting Edition)
+<img width="686" height="819" alt="image" src="https://github.com/user-attachments/assets/b137de0e-a9de-471a-bf32-1168242866ea" />
 
 A specialized guild utility for **The Cult**.
 
@@ -10,7 +11,4 @@ A specialized guild utility for **The Cult**.
 
 ## Usage
 *   `/scam` - Toggle the window.
-*   **Ctrl + Drag** - Move the window.
-*   **Resize** - Drag the bottom-right corner.
-
-*No GBank access required. No manual scanning.*
+<img width="385" height="1011" alt="image" src="https://github.com/user-attachments/assets/75e5f91a-3c45-499d-9292-c708b6e94b5d" />
